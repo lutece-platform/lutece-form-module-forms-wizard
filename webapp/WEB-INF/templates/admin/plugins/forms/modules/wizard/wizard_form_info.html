@@ -1,0 +1,74 @@
+<#include "/admin/plugins/forms/modules/wizard/wizard_commons.html" />
+<@wizardScreen step=1 action='saveFormInfo' screen='formInfo' screenIcon='forms'>
+    <@row>
+        <@columns md=6>
+            <@formGroup labelFor='title' labelKey='#i18n{forms.modify_form.labelTitle}' helpKey='#i18n{forms.modify_form.labelTitle.help}' mandatory=true rows=2>
+                <@input type='text' name='title' id='title' value=form.title! maxlength=255 mandatory=true />
+            </@formGroup>
+        </@columns>
+        <@columns md=6>
+            <@formGroup labelFor='description' labelKey='#i18n{forms.modify_form.labelDescription}' helpKey='#i18n{forms.modify_form.labelDescription.help}' rows=2>
+                <@input type='textarea' name='description' id='description' rows=2>${form.description!}</@input>
+            </@formGroup>
+        </@columns>
+    </@row>
+    <#-- Availability dates, the same fields as the forms creation screen -->
+    <#assign availabilityStartDatestr = ''><#if form.availabilityStartDate??><#assign availabilityStartDatestr = form.availabilityStartDate?iso_local_nz></#if>
+    <#assign availabilityEndDatestr = ''><#if form.availabilityEndDate??><#assign availabilityEndDatestr = form.availabilityEndDate?iso_local_nz></#if>
+    <@row>
+        <@columns md=6>
+            <@formGroup labelFor='breadcrumbName' labelKey='#i18n{forms.modify_form.labelBreadcrumb}' mandatory=true rows=2>
+                <@select name='breadcrumbName' id='breadcrumbName' items=breadcrumb_list default_value=form.breadcrumbName! mandatory=true />
+            </@formGroup>
+        </@columns>
+        <@columns md=3>
+            <@formGroup labelFor='availabilityStartDate' labelKey='#i18n{forms.modify_form.labelStartDate}' helpKey='#i18n{forms.modify_form.labelStartDate.help}' rows=2>
+                <@inputGroup>
+                    <@input type='datetime' language=locale name='availabilityStartDate' id='availabilityStartDate' value=availabilityStartDatestr />
+                    <@inputGroupItem type='text'><@icon style='calendar' /></@inputGroupItem>
+                </@inputGroup>
+            </@formGroup>
+        </@columns>
+        <@columns md=3>
+            <@formGroup labelFor='availabilityEndDate' labelKey='#i18n{forms.modify_form.labelEndDate}' helpKey='#i18n{forms.modify_form.labelEndDate.help}' rows=2>
+                <@inputGroup>
+                    <@input type='datetime' language=locale name='availabilityEndDate' id='availabilityEndDate' value=availabilityEndDatestr />
+                    <@inputGroupItem type='text'><@icon style='calendar' /></@inputGroupItem>
+                </@inputGroup>
+            </@formGroup>
+        </@columns>
+    </@row>
+    <#-- Workgroup and access control, the same fields as the forms creation screen -->
+    <@row>
+        <@columns md=6>
+            <@formGroup labelFor='workgroup' labelKey='#i18n{forms.modify_form.workgroup.label}' rows=2>
+                <@select name='workgroup' id='workgroup' items=workgroup_list default_value=form.workgroup! />
+            </@formGroup>
+        </@columns>
+        <#if accesscontrol_list?size gt 1>
+        <@columns md=6>
+            <@formGroup labelFor='id_accesscontrol' labelKey='#i18n{forms.modify_form.accesscontrol.label}' rows=2>
+                <@select name='id_accesscontrol' id='id_accesscontrol' items=accesscontrol_list default_value='${draft.idAccessControl?c}' />
+            </@formGroup>
+        </@columns>
+        </#if>
+    </@row>
+    <@formGroup labelKey='#i18n{forms.create_form.labelEndMessageDisplay}' hideLabel=['all'] helpKey='#i18n{forms.create_form.labelEndMessageDisplay.help}' rows=2>
+        <@checkBox orientation='switch' labelKey='#i18n{forms.create_form.labelEndMessageDisplay}' name='endMessageDisplay' id='endMessageDisplay' value='1' checked=formMessage.endMessageDisplay />
+    </@formGroup>
+    <#-- The end message is only shown when its display is switched on -->
+    <@div id='endMessageGroup' class='${formMessage.endMessageDisplay?then("", "d-none")}'>
+        <@formGroup labelFor='endMessage' labelKey='#i18n{forms.create_form.labelEndMessage}' helpKey='#i18n{forms.create_form.labelEndMessage.help}' rows=2 class='mb-0'>
+            <@input type='textarea' name='endMessage' id='endMessage' richtext=true>${formMessage.endMessage!}</@input>
+        </@formGroup>
+    </@div>
+</@wizardScreen>
+<script>
+document.addEventListener( 'DOMContentLoaded', () => {
+    const endMessageDisplay = document.getElementById( 'endMessageDisplay' );
+    const endMessageGroup = document.getElementById( 'endMessageGroup' );
+    endMessageDisplay.addEventListener( 'change', () => endMessageGroup.classList.toggle( 'd-none', !endMessageDisplay.checked ) );
+} );
+</script>
+<#include "/admin/util/editor/editor.html" />
+<@initEditor />

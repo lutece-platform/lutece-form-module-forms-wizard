@@ -1,0 +1,9 @@
+<#include "/admin/plugins/forms/modules/wizard/wizard_commons.html" />
+<@wizardScreen step=2 action='saveStructure' screen='structure' screenIcon='stack-2'>
+    <@fieldSet legend='#i18n{module.forms.wizard.structure.title}' hideLegend=['all'] class='mb-0'>
+        <@radioButton name='multi_step' id='multi_step_single' value='false' labelKey='#i18n{module.forms.wizard.structure.labelSingle}' checked=!draft.multiStep params={"aria-describedby": "multi_step_single_help"} />
+        <@p id='multi_step_single_help' class='text-secondary small ms-4 mb-3'>#i18n{module.forms.wizard.structure.labelSingle.help}</@p>
+        <@radioButton name='multi_step' id='multi_step_multi' value='true' labelKey='#i18n{module.forms.wizard.structure.labelMulti}' checked=draft.multiStep params={"aria-describedby": "multi_step_multi_help"} />
+        <@p id='multi_step_multi_help' class='text-secondary small ms-4 mb-0'>#i18n{module.forms.wizard.structure.labelMulti.help}</@p>
+    </@fieldSet>
+</@wizardScreen>

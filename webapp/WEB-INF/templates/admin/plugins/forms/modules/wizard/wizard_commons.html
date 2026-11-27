@@ -1,0 +1,56 @@
+<#--
+Frame of a wizard screen, after the Tabler wizard (preview.tabler.io/wizard.html): a narrow centred card with an icon, a title and an
+introduction, a section label naming the step, the fields, then under the card the progress bar and the buttons.
+Every button of a screen posts the same action; the "operation" parameter tells them apart.
+Parameters:
+@param - step - number - required - the number of the screen, 1 to 4
+@param - action - string - required - the action posted by the screen
+@param - screen - string - required - the i18n group of the screen (formInfo, structure, steps, summary)
+@param - screenIcon - string - required - the Tabler icon of the screen
+@param - nextLabel - string - optional - the label of the main button
+@param - nextIcon - string - optional - the icon of the main button
+-->
+<#macro wizardScreen step action screen screenIcon nextLabel='#i18n{module.forms.wizard.wizard.buttonContinue}' nextIcon='arrow-right'>
+<#assign wizardStepCount = 4 />
+<@pageContainer>
+    <@pageColumn>
+        <@pageHeader title='#i18n{module.forms.wizard.wizard.heading}'>
+            <@aButton href='jsp/admin/plugins/forms/ManageForms.jsp' buttonIcon='x' title='#i18n{portal.util.labelCancel}' color='light' />
+        </@pageHeader>
+        <@div class='container container-narrow py-2'>
+            <@messages infos=infos![] errors=errors![] warnings=warnings![] />
+            <@tform method='post' name='wizard_form' id='wizard_form' action='jsp/admin/plugins/forms/modules/wizard/ManageFormWizard.jsp'>
+                <@input type='hidden' name='action' value=action />
+                <#-- The Enter key submits the first submit button of the form: make it the main button -->
+                <@button type='submit' name='operation' value='next' class='d-none' title=nextLabel params={"tabindex": "-1", "aria-hidden": "true"} />
+                <@div class='card card-md'>
+                    <@div class='card-body text-center py-4 p-sm-5'>
+                        <@span class='avatar avatar-xl bg-purple-lt'><@icon style=screenIcon class='icon-lg' /></@span>
+                        <@h level=2 class='mt-4'>#i18n{module.forms.wizard.${screen}.title}</@h>
+                        <@p class='text-secondary mb-0'>#i18n{module.forms.wizard.${screen}.intro}</@p>
+                    </@div>
+                    <@div class='hr-text hr-text-spaceless'>#i18n{module.forms.wizard.wizard.labelStep} ${step} #i18n{module.forms.wizard.wizard.labelOf} ${wizardStepCount}</@div>
+                    <@div class='card-body'>
+                        <#nested>
+                    </@div>
+                </@div>
+                <@div class='row align-items-center mt-3'>
+                    <@div class='col-4'>
+                        <@div class='progress' params={"role": "progressbar", "aria-label": "#i18n{module.forms.wizard.wizard.labelProgress}", "aria-valuenow": "${step * 25}", "aria-valuemin": "0", "aria-valuemax": "100"}>
+                            <@div class='progress-bar w-${(step * 25)?c}' />
+                        </@div>
+                    </@div>
+                    <@div class='col'>
+                        <@div class='btn-list justify-content-end'>
+                            <#if step gt 1>
+                            <@button type='submit' name='operation' value='previous' buttonIcon='arrow-left' title='#i18n{module.forms.wizard.wizard.buttonPrevious}' color='link' class='link-secondary' params={"formnovalidate": true} />
+                            </#if>
+                            <@button type='submit' name='operation' value='next' buttonIcon=nextIcon iconPosition='right' title=nextLabel color='primary' />
+                        </@div>
+                    </@div>
+                </@div>
+            </@tform>
+        </@div>
+    </@pageColumn>
+</@pageContainer>
+</#macro>

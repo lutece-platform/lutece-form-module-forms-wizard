@@ -1,0 +1,69 @@
+<#include "/admin/plugins/forms/modules/wizard/wizard_commons.html" />
+<#-- One line of the summary of a step -->
+<#macro summaryStep step label status='' active=false>
+    <@li class=active?then('step-item active', 'step-item') params=active?then({"aria-current": "step"}, {})>
+        <@div class='h4 m-0'>${label}<#if status != ''> <@span class='badge bg-purple-lt ms-1'>${status}</@span></#if></@div>
+        <#if step.fromTemplate>
+        <@div class='text-secondary'>#i18n{module.forms.wizard.summary.labelFromTemplate} « ${step.templateTitle!} »</@div>
+        <#else>
+        <@div class='text-secondary'>${step.title!}<#if step.description?has_content> · ${step.description}</#if></@div>
+        </#if>
+    </@li>
+</#macro>
+<#assign form = draft.form />
+<@wizardScreen step=4 action='createForm' screen='summary' screenIcon='checklist' nextLabel='#i18n{module.forms.wizard.wizard.buttonCreate}' nextIcon='check'>
+    <@div class='datagrid mb-4'>
+        <@div class='datagrid-item'>
+            <@div class='datagrid-title'>#i18n{forms.modify_form.labelTitle}</@div>
+            <@div class='datagrid-content'>${form.title!}</@div>
+        </@div>
+        <@div class='datagrid-item'>
+            <@div class='datagrid-title'>#i18n{forms.modify_form.labelBreadcrumb}</@div>
+            <@div class='datagrid-content'><#list breadcrumb_list as breadcrumb><#if breadcrumb.code == form.breadcrumbName!''>${breadcrumb.name}</#if></#list></@div>
+        </@div>
+        <@div class='datagrid-item'>
+            <@div class='datagrid-title'>#i18n{forms.modify_form.labelStartDate}</@div>
+            <@div class='datagrid-content'><#if form.availabilityStartDate??>${form.availabilityStartDate?string('dd/MM/yyyy HH:mm')}<#else>#i18n{module.forms.wizard.summary.labelNoDate}</#if></@div>
+        </@div>
+        <@div class='datagrid-item'>
+            <@div class='datagrid-title'>#i18n{forms.modify_form.labelEndDate}</@div>
+            <@div class='datagrid-content'><#if form.availabilityEndDate??>${form.availabilityEndDate?string('dd/MM/yyyy HH:mm')}<#else>#i18n{module.forms.wizard.summary.labelNoDate}</#if></@div>
+        </@div>
+        <@div class='datagrid-item'>
+            <@div class='datagrid-title'>#i18n{forms.modify_form.workgroup.label}</@div>
+            <@div class='datagrid-content'><#list workgroup_list as workgroup><#if workgroup.code == form.workgroup!''>${workgroup.name}</#if></#list></@div>
+        </@div>
+        <#if accesscontrol_list?size gt 1>
+        <@div class='datagrid-item'>
+            <@div class='datagrid-title'>#i18n{forms.modify_form.accesscontrol.label}</@div>
+            <@div class='datagrid-content'><#list accesscontrol_list as accesscontrol><#if accesscontrol.code == draft.idAccessControl?c>${accesscontrol.name}</#if></#list></@div>
+        </@div>
+        </#if>
+        <#if form.description?has_content>
+        <@div class='datagrid-item'>
+            <@div class='datagrid-title'>#i18n{forms.modify_form.labelDescription}</@div>
+            <@div class='datagrid-content'>${form.description}</@div>
+        </@div>
+        </#if>
+        <@div class='datagrid-item'>
+            <@div class='datagrid-title'>#i18n{module.forms.wizard.summary.labelStructure}</@div>
+            <@div class='datagrid-content'><#if draft.multiStep>#i18n{module.forms.wizard.structure.labelMulti}<#else>#i18n{module.forms.wizard.structure.labelSingle}</#if></@div>
+        </@div>
+        <@div class='datagrid-item'>
+            <@div class='datagrid-title'>#i18n{module.forms.wizard.summary.labelEndMessage}</@div>
+            <@div class='datagrid-content'><#if draft.formMessage.endMessageDisplay>${richText( draft.formMessage.endMessage! )}<#else>#i18n{module.forms.wizard.summary.labelEndMessageHidden}</#if></@div>
+        </@div>
+    </@div>
+    <@h level=3 class='mb-3'>#i18n{module.forms.wizard.summary.labelSteps}</@h>
+    <@ul class='steps steps-vertical mb-0'>
+        <#if draft.multiStep>
+            <@summaryStep step=draft.firstStep label='#i18n{module.forms.wizard.steps.sectionFirst}' status='#i18n{module.forms.wizard.summary.labelInitial}' />
+            <#list draft.intermediateSteps as step>
+            <@summaryStep step=step label='#i18n{module.forms.wizard.steps.labelIntermediate} ${step?index + 1}' />
+            </#list>
+            <@summaryStep step=draft.lastStep label='#i18n{module.forms.wizard.steps.sectionLast}' status='#i18n{module.forms.wizard.summary.labelFinal}' active=true />
+        <#else>
+            <@summaryStep step=draft.firstStep label='#i18n{module.forms.wizard.steps.sectionSingle}' active=true />
+        </#if>
+    </@ul>
+</@wizardScreen>
